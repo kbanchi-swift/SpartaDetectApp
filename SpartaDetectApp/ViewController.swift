@@ -19,32 +19,54 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Set the view's delegate
         sceneView.delegate = self
         
-        // Show statistics such as fps and timing information
-        sceneView.showsStatistics = true
-        
-        // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
-        
-        // Set the scene to the view
-        sceneView.scene = scene
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        // Create a session configuration
-        let configuration = ARWorldTrackingConfiguration()
-
-        // Run the view's session
+        //シーンの生成
+        sceneView.scene = SCNScene()
+        //オムニライトでのライティングを自動で使います
+        sceneView.autoenablesDefaultLighting = true
+        //今回は画像検出できるコンフィギュレーションを使用します
+        let configuration = ARImageTrackingConfiguration()
+        //検出する画像をAR Resourcesから読み込んであげます
+        configuration.trackingImages = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources", bundle: nil)!
+        //セッション開始！
         sceneView.session.run(configuration)
+        
+//        // Show statistics such as fps and timing information
+//        sceneView.showsStatistics = true
+//
+//        // Create a new scene
+//        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+//
+//        // Set the scene to the view
+//        sceneView.scene = scene
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        // Pause the view's session
-        sceneView.session.pause()
+    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+        //立方体を入れるノードを生成
+        let boxNode = SCNNode()
+        //ジオメトリを箱型に設定 -> 数値で立方体に
+        boxNode.geometry = SCNBox(width: 0.05, height: 0.05, length: 0.05, chamferRadius: 0)
+        //立方体が埋まらないように高さを調整
+        boxNode.position.y += 0.025
+        //ノードに追加
+        node.addChildNode(boxNode)
     }
+    
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//
+//        // Create a session configuration
+//        let configuration = ARWorldTrackingConfiguration()
+//
+//        // Run the view's session
+//        sceneView.session.run(configuration)
+//    }
+//
+//    override func viewWillDisappear(_ animated: Bool) {
+//        super.viewWillDisappear(animated)
+//
+//        // Pause the view's session
+//        sceneView.session.pause()
+//    }
 
     // MARK: - ARSCNViewDelegate
     
